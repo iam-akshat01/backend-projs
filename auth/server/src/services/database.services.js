@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const hashUtilities = require('../utils/hashpassword.utils');
 
 // find user by email or username
 const findUser = async (email, username) => {
@@ -31,6 +32,18 @@ const findUser = async (email, username) => {
 };
 
 // create user
+const createUser = async (email, username, password) => {
+    const hash = await hashUtilities.hashPassword(password);
 
+    const newUser = new User({
+        email,
+        username,
+        password: hash,
+        isVerified: false
+    });
 
-module.exports = { findUser };
+    await newUser.save();
+    return newUser;
+};
+
+module.exports = { findUser, createUser };

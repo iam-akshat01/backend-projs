@@ -8,7 +8,7 @@ const signupController = async (req, res) => {
     try {
         // exists or not
         await Userdatabase.findUser(email, username);
-
+        await Userdatabase.createUser(email, username, password);
         // otp validation (use email to send)
         // after valid otp call create after password being hashed
 
