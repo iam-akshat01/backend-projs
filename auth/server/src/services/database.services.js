@@ -31,6 +31,22 @@ const findUser = async (email, username) => {
     }
 };
 
+//verify user
+const checkbyMail= async(email) =>{
+    try{
+        const checkUserexists=await User.findOne({email});
+        if(!checkUserexists){
+            const err= new Error("USER_NOT_FOUND");
+            err.code="USER_NOT_FOUND";
+            throw err;
+        }
+        return checkUserexists;
+    }
+    catch(err){
+        throw err;
+    }
+}
+
 // create user
 const createUser = async (email, username, password) => {
     const hash = await hashUtilities.hashPassword(password);
@@ -46,4 +62,4 @@ const createUser = async (email, username, password) => {
     return newUser;
 };
 
-module.exports = { findUser, createUser };
+module.exports = { findUser, checkbyMail, createUser };

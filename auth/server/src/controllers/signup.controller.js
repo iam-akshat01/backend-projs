@@ -3,6 +3,7 @@ const Userdatabase = require('../services/database.services');
 const otpServices = require('../services/otp.service');
 const otpdatabaseServices = require('../services/otpdatabase.service');
 
+
 const signupController = async (req, res) => {
     // logic for a user signup
     const { email, username, password } = req.body;
@@ -14,7 +15,6 @@ const signupController = async (req, res) => {
         // otp validation (use email to send)
         const otpObj = await otpServices.sendMail(email);
         await otpdatabaseServices.storeOTP(user._id,otpObj);
-
         return res.status(201).json({
             message: "Signup flow can continue"
         });
