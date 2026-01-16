@@ -1,65 +1,23 @@
-const User = require('../models/user');
-const hashUtilities = require('../utils/hashpassword.utils');
+const checkIdentifier = require("../utils/identifiercheck.utils");
+const databaseServices = require("../services/database.services");
 
-// find user by email or username
-const findUser = async (email, username) => {
-    try {
-        const existingUser = await User.findOne({
-            $or: [{ email }, { username }]
-        });
+const loginservice = async (identifier) => {
+    const isEmail = checkIdentifier(identifier);
 
-        if (!existingUser) {
-            return null;
-        }
+    // 1. Fetch user
+    const user = isEmail
+        ? await databaseServices.checkbyMail(identifier)
+        : await databaseServices.checkbyUsername(identifier);
 
-        if (existingUser.email === email) {
-            const err = new Error("EMAIL_ALREADY_EXISTS");
-            err.code = "EMAIL_CONFLICT";
-            throw err;
-        }
-
-        if (existingUser.username === username) {
-            const err = new Error("USERNAME_ALREADY_EXISTS");
-            err.code = "USERNAME_CONFLICT";
-            throw err;
-        }
-
-        return null;
-
-    } catch (err) {
+    // 2. Check verification
+    if (!user.isVerified) {
+        const err = new Error("USER_NOT_VERIFIED");
+        err.code = "USER_NOT_VERIFIED";
         throw err;
     }
+
+    // 3. Return user for next steps (password/JWT later)
+    return user;
 };
 
-//verify user
-const checkbyMail= async(email) =>{
-    try{
-        const checkUserexists=await User.findOne({email});
-        if(!checkUserexists){
-            const err= new Error("USER_NOT_FOUND");
-            err.code="USER_NOT_FOUND";
-            throw err;
-        }
-        return checkUserexists;
-    }
-    catch(err){
-        throw err;
-    }
-}
-
-// create user
-const createUser = async (email, username, password) => {
-    const hash = await hashUtilities.hashPassword(password);
-
-    const newUser = new User({
-        email,
-        username,
-        password: hash,
-        isVerified: false
-    });
-
-    await newUser.save();
-    return newUser;
-};
-
-module.exports = { findUser, checkbyMail, createUser };
+module.exports = loginservice;
