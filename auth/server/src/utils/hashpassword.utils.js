@@ -1,14 +1,35 @@
-const bcrypt = require('bcrypt');
-require("dotenv").config();
+const checkIdentifier = require("../utils/identifiercheck.utils");
+const databaseServices = require("../services/database.services");
+const hashUtilities = require("../utils/hashpassword.utils");
 
-// hash password
-const hashPassword = async (password) => {
-    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS);
-    const hash = await bcrypt.hash(password, saltRounds);
-    return hash;
-}
+const loginservice = async (identifier, password) => {
+    const isEmail = checkIdentifier(identifier);
 
-// compare hashes
-// (you will implement this later)
+    // fetch user
+    const user = isEmail
+        ? await databaseServices.checkbyMail(identifier)
+        : await databaseServices.checkbyUsername(identifier);
 
-module.exports = { hashPassword /*, compareHashes */ };
+    // check verification
+    if (!user.isVerified) {
+        const err = new Error("USER_NOT_VERIFIED");
+        err.code = "USER_NOT_VERIFIED";
+        throw err;
+    }
+
+    // compare password
+    const isPasswordCorrect = await hashUtilities.comparePasswords(
+        password,
+        user.password
+    );
+
+    if (!isPasswordCorrect) {
+        const err = new Error("INVALID_CREDENTIALS");
+        err.code = "INVALID_CREDENTIALS";
+        throw err;
+    }
+
+    return user;
+};
+
+module.exports = loginservice;
