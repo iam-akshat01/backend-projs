@@ -1,5 +1,6 @@
 const checkIdentifier = require("../utils/identifiercheck.utils");
 const databaseServices = require("../services/database.services");
+const hashUtilities = require("../utils/hashpassword.utils");
 
 const loginservice = async (identifier, password) => {
     const isEmail = checkIdentifier(identifier);
@@ -16,8 +17,12 @@ const loginservice = async (identifier, password) => {
         throw err;
     }
 
-    // password check will come here next
-    const isPasswordCorrect = await databaseServices.comparePasswords(password, user.password);
+    // compare password
+    const isPasswordCorrect = await hashUtilities.comparePasswords(
+        password,
+        user.password
+    );
+
     if (!isPasswordCorrect) {
         const err = new Error("INVALID_CREDENTIALS");
         err.code = "INVALID_CREDENTIALS";
