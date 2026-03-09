@@ -12,4 +12,4 @@ const mailSend = async (email) => {
     return otpObj;
 };
 
-module.exports= mailSend;
+module.exports= {mailSend};

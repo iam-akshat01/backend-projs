@@ -17,6 +17,7 @@ const logincontroller = async (req, res) => {
 
     } catch (err) {
         return res.status(400).json({
+            message: "how da fuck",
             error: err.message
         });
     }

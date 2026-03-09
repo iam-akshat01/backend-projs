@@ -1,10 +1,10 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
-
 let connection = null;
 
 // create or reuse transporter
 const createTransport = async () => {
+
+    
     if (connection) {
         return connection;
     }

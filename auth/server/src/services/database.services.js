@@ -1,24 +1,49 @@
+
 const User = require("../models/user");
 
-// find by email
+// check if email or username already exists
+const findUser = async (email, username) => {
+
+    const emailUser = await User.findOne({ email });
+    if (emailUser) {
+        const err = new Error("EMAIL_CONFLICT");
+        err.code = "EMAIL_CONFLICT";
+        throw err;
+    }
+
+    const usernameUser = await User.findOne({ username });
+    if (usernameUser) {
+        const err = new Error("USERNAME_CONFLICT");
+        err.code = "USERNAME_CONFLICT";
+        throw err;
+    }
+
+    return null;
+};
+
+// find user by email (used for login / OTP verification)
 const checkbyMail = async (email) => {
     const user = await User.findOne({ email });
+
     if (!user) {
         const err = new Error("USER_NOT_FOUND");
         err.code = "USER_NOT_FOUND";
         throw err;
     }
+
     return user;
 };
 
-// find by username
+// find user by username
 const checkbyUsername = async (username) => {
     const user = await User.findOne({ username });
+
     if (!user) {
         const err = new Error("USER_NOT_FOUND");
         err.code = "USER_NOT_FOUND";
         throw err;
     }
+
     return user;
 };
 
@@ -36,7 +61,9 @@ const createUser = async (email, username, password) => {
 };
 
 module.exports = {
+    findUser,
     checkbyMail,
     checkbyUsername,
     createUser
 };
+
