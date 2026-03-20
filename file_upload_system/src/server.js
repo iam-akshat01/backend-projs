@@ -12,7 +12,8 @@ app.use(express.urlencoded({extended:true}));
 app.use(cors());
 
 // connect database 
-
+const {Pool} = require("pg");
+const {drizzle} = require("drizzle-orm/postgres-js");
 // routes
 
 // use routes in app 
