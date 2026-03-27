@@ -1,17 +1,15 @@
-const jwtutility = require("../utils/jwt.utils");
+const jwtUtility = require("../utils/jwt.utils");
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies.token; 
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwtutility.verifyToken(token);
-    req.user = decoded;
+    const decoded = jwtUtility.verifyToken(token);
+    req.user = decoded; 
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid Token" });

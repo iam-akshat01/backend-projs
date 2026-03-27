@@ -6,8 +6,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
 // generate token
 const generateToken = (user) => {
   const payload = {
-    userId: user.id,
-    role: user.role
+    id: user.id,
+    role: user.role || "user"
   };
 
   return jwt.sign(payload, JWT_SECRET, {
