@@ -3,7 +3,7 @@ const router = express.Router();
 
 const signupController = require("../controllers/signupController");
 const loginController = require("../controllers/loginController");
-const generalRateLimiter = require("../middleware/rateLimiter");
+const {generalRateLimiter} = require("../middleware/rateLimiter");
 
 router.use(generalRateLimiter);
 
