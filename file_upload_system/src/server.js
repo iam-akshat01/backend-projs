@@ -18,7 +18,10 @@ app.use(cookieParser());
 
 // routes
 const authRoutes = require("./routes/authRoutes");
+const fileRoutes = require("./routes/fileRoutes");
+
 app.use("/auth", authRoutes);
+app.use("/files", fileRoutes); 
 
 // health check route
 app.get("/", (req, res) => {
