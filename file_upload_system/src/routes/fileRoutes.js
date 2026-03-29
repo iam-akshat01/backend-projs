@@ -11,6 +11,6 @@ const uploadMiddleware = require("../middleware/uploadMiddleware");
 const fileController = require("../controllers/fileController");
 
 router.post("/upload", authMiddleware, roleMiddleware(["user", "admin"]), uploadMiddleware, fileController.uploadFile);
-
+router.get("/", authMiddleware, fileController.getFiles);
 
 module.exports= router;
