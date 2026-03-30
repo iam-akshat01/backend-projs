@@ -1,4 +1,5 @@
 const fileService = require("../services/fileService");
+const fs = require("fs");
 
 const uploadFile = async (req, res) => {
   try {
@@ -50,4 +51,41 @@ const getFiles = async (req, res) => {
   }
 };
 
-module.exports = { uploadFile, getFiles };
+
+const downloadFile = async (req, res) => {
+  try {
+    const fileId = parseInt(req.params.id, 10);
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    const file = await fileService.getAFile(fileId, userId, userRole);
+ 
+    if (!file) {
+      return res.status(404).json({
+        message: "File not found",
+      });
+    }
+
+    if (!fs.existsSync(file.path)) {
+      return res.status(404).json({
+        message: "File missing on server",
+      });
+    }
+
+    return res.download(file.path, file.originalName);
+
+  } catch (err) {
+    if (err.code === "FORBIDDEN") {
+      return res.status(403).json({
+        message: "Access denied",
+      });
+    }
+
+    console.error("Download error:", err);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+
+module.exports = { uploadFile, getFiles, downloadFile };

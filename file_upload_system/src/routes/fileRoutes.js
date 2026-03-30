@@ -1,16 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const {generalRateLimiter} = require("../middleware/rateLimiter");
+const { generalRateLimiter } = require("../middleware/rateLimiter");
 
 router.use(generalRateLimiter);
 
-const {authMiddleware} = require("../middleware/authMiddleware");
-const {roleMiddleware} = require("../middleware/roleMiddleware");
+const { authMiddleware } = require("../middleware/authMiddleware");
+const { roleMiddleware } = require("../middleware/roleMiddleware");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
 const fileController = require("../controllers/fileController");
 
 router.post("/upload", authMiddleware, roleMiddleware(["user", "admin"]), uploadMiddleware, fileController.uploadFile);
+
 router.get("/", authMiddleware, fileController.getFiles);
 
-module.exports= router;
+router.get("/:id/download", authMiddleware, roleMiddleware(["user", "admin"]), fileController.downloadFile);
+
+module.exports = router;

@@ -34,8 +34,25 @@ const selectFilesByUserId = async (userId) => {
   }
 };
 
+const selectFileById = async (fileId) =>{
+  try{
+    const file = await db
+      .select()
+      .from(files)
+      .where(eq(files.id, fileId))
+      .limit(1);
+
+    return file[0] || null;
+
+  }
+  catch(err){
+    throw new Error("Error fetching file :"+ err.message);
+  }
+}
+
 module.exports = {
   createFileRecord,
   selectAllFiles,
   selectFilesByUserId,
+  selectFileById,
 };

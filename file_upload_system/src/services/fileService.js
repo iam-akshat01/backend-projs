@@ -32,9 +32,31 @@ const getFiles = async (userId , userRole) =>{
     catch(err){
         throw new Error("Error fetching files: " + err.message);
     }
+};
+
+// ✅ FIXED DOWNLOAD LOGIC
+const getAFile = async (fileId, userId, userRole) =>{
+  try{
+    const file = await fileDatabaseServices.selectFileById(fileId);
+
+    if (!file) return null;
+
+    if (userRole !== "admin" && file.userId !== userId) {
+      const err = new Error("Forbidden");
+      err.code = "FORBIDDEN";
+      throw err;
+    }
+
+    return file;
+
+  }
+  catch(err){
+    throw err;
+  }
 }
 
 module.exports = {
   fileUpload,
   getFiles,
+  getAFile,
 };
