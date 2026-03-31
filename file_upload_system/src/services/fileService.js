@@ -34,7 +34,7 @@ const getFiles = async (userId , userRole) =>{
     }
 };
 
-// ✅ FIXED DOWNLOAD LOGIC
+
 const getAFile = async (fileId, userId, userRole) =>{
   try{
     const file = await fileDatabaseServices.selectFileById(fileId);
@@ -55,8 +55,30 @@ const getAFile = async (fileId, userId, userRole) =>{
   }
 }
 
+const deleteAFile = async (file, userId, userRole) => {
+  try {
+    if (userRole !== "admin" && file.userId !== userId) {
+      const err = new Error("Forbidden");
+      err.code = "FORBIDDEN";
+      throw err;
+    }
+
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+
+    await fileDatabaseServices.deleteFileById(file.id);
+
+    return file;
+
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   fileUpload,
   getFiles,
   getAFile,
+  deleteAFile,
 };

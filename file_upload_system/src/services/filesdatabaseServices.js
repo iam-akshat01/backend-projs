@@ -50,9 +50,18 @@ const selectFileById = async (fileId) =>{
   }
 }
 
+const deleteFileById = async (fileId) => {
+  try {
+    await db.delete(files).where(eq(files.id, fileId));
+  } catch (err) {
+    throw new Error("Error deleting file: " + err.message);
+  }
+};
+
 module.exports = {
   createFileRecord,
   selectAllFiles,
   selectFilesByUserId,
   selectFileById,
+  deleteFileById,
 };
