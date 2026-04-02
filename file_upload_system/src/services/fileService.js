@@ -18,25 +18,20 @@ const fileUpload = async (fileData) => {
   }
 };
 
-const getFiles = async (userId , userRole) =>{
-    try{
-        if(userRole === "admin"){
-            const files = await fileDatabaseServices.selectAllFiles(); 
-            return files;
-        }
-        else{
-            const files = await fileDatabaseServices.selectFilesByUserId(userId);
-            return files;
-        }
+const getFiles = async (userId, userRole, page, limit) => {
+  try {
+    if (userRole === "admin") {
+      return await fileDatabaseServices.selectAllFiles(page, limit);
+    } else {
+      return await fileDatabaseServices.selectFilesByUserId(userId, page, limit);
     }
-    catch(err){
-        throw new Error("Error fetching files: " + err.message);
-    }
+  } catch (err) {
+    throw new Error("Error fetching files: " + err.message);
+  }
 };
 
-
-const getAFile = async (fileId, userId, userRole) =>{
-  try{
+const getAFile = async (fileId, userId, userRole) => {
+  try {
     const file = await fileDatabaseServices.selectFileById(fileId);
 
     if (!file) return null;
@@ -49,11 +44,10 @@ const getAFile = async (fileId, userId, userRole) =>{
 
     return file;
 
-  }
-  catch(err){
+  } catch (err) {
     throw err;
   }
-}
+};
 
 const deleteAFile = async (file, userId, userRole) => {
   try {

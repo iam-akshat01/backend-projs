@@ -36,13 +36,19 @@ const getFiles = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;
 
-  try {
-    const userFiles = await fileService.getFiles(userId, userRole);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);
 
-    return res.status(200).json({
-      message: "Files fetched successfully",
-      files: userFiles,
-    });
+  try {
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({
+        message: "Invalid page or limit values",
+      });
+    }
+
+    const result = await fileService.getFiles(userId, userRole, page, limit);
+
+    return res.status(200).json(result);
   } catch (err) {
     console.error("Error fetching files:", err);
     return res.status(500).json({
@@ -59,6 +65,7 @@ const downloadFile = async (req, res) => {
         message: "Invalid file ID",
       });
     }
+
     const userId = req.user.id;
     const userRole = req.user.role;
 

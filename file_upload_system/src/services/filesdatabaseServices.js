@@ -11,44 +11,67 @@ const createFileRecord = async (fileData) => {
   }
 };
 
-const selectAllFiles = async () => {
+const selectAllFiles = async (page, limit) => {
   try {
-    return await db
+    const offset = (page - 1) * limit;
+
+    const result = await db
       .select()
       .from(files)
-      .orderBy(desc(files.createdAt));
+      .orderBy(desc(files.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      files: result,
+      page,
+      limit,
+      count: result.length,
+    };
+
   } catch (err) {
     throw new Error("Error fetching all files: " + err.message);
   }
 };
 
-const selectFilesByUserId = async (userId) => {
+const selectFilesByUserId = async (userId, page, limit) => {
   try {
-    return await db
+    const offset = (page - 1) * limit;
+
+    const result = await db
       .select()
       .from(files)
       .where(eq(files.userId, userId))
-      .orderBy(desc(files.createdAt));
+      .orderBy(desc(files.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      files: result,
+      page,
+      limit,
+      count: result.length,
+    };
+
   } catch (err) {
     throw new Error("Error fetching files by userId: " + err.message);
   }
 };
 
-const selectFileById = async (fileId) =>{
-  try{
-    const file = await db
+const selectFileById = async (fileId) => {
+  try {
+    const result = await db
       .select()
       .from(files)
       .where(eq(files.id, fileId))
       .limit(1);
 
-    return file[0] || null;
+    return result[0] || null;
 
+  } catch (err) {
+    throw new Error("Error fetching file: " + err.message);
   }
-  catch(err){
-    throw new Error("Error fetching file :"+ err.message);
-  }
-}
+};
 
 const deleteFileById = async (fileId) => {
   try {
